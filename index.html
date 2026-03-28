@@ -3,26 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- ═══════════════════════════════════════════════════════
-       PAGE TITLE — edit here
-       ═══════════════════════════════════════════════════════ -->
   <title>Diogo Arnaud — Video Editor &amp; Designer</title>
 
-  <!-- Google Fonts (loaded first so CSS can reference them) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
-
-  <!-- External stylesheet (same folder as index.html) -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- ═══════════════════════════════════════════════════════
-       INLINE STYLES — ensures the page always looks right
-       even if style.css fails to load (e.g. opened directly
-       as a file:// URL in some browsers).
-       If you deploy to a server, the external file is used
-       and these are effectively overridden.
-       ═══════════════════════════════════════════════════════ -->
   <style>
     /* ── CSS Variables ── */
     :root {
@@ -152,8 +139,11 @@
     .portfolio-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
     .portfolio-card { background: var(--black-card); border: 1px solid var(--black-border); border-radius: var(--radius); overflow: hidden; transition: transform .35s,border-color .35s,box-shadow .35s; }
     .portfolio-card:hover { transform: translateY(-8px); border-color: rgba(255,106,0,.3); box-shadow: 0 28px 60px rgba(0,0,0,.5); }
-    .video-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #0d0d0d; overflow: hidden; }
+    .video-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #0d0d0d; overflow: hidden; display: block; }
+    .video-wrap img, .video-wrap .thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+    .play-button { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+    .play-button::after { content:''; width:56px; height:56px; background:rgba(255,106,0,0.92); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 28px rgba(255,106,0,.45); clip-path: polygon(35% 25%, 35% 75%, 75% 50%); }
     .portfolio-info { padding: 22px 24px 26px; }
     .portfolio-cat { display:inline-block; font-size:.66rem; font-weight:500; letter-spacing:.16em; text-transform:uppercase; color:var(--orange); margin-bottom:10px; }
     .portfolio-title { font-family:var(--font-display); font-weight:700; font-size:1rem; letter-spacing:-.02em; margin-bottom:8px; }
@@ -234,50 +224,73 @@
       .footer-inner   { flex-direction:column; align-items:flex-start; }
     }
 
-    /* ── CUSTOM CURSOR ── */
-    *, *::before, *::after { cursor: none !important; }
-    #cursor-dot {
-      position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99999;
-      width: 8px; height: 8px; background: #ff6a00; border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform .12s ease, background .25s ease, width .25s ease, height .25s ease;
-      mix-blend-mode: normal;
+    /* ── PREMIUM PLAY CURSOR ── */
+    * { cursor: none !important; }
+    #cursor-play {
+      position: fixed;
+      top: 0; left: 0;
+      width: 28px; height: 28px;
+      pointer-events: none;
+      z-index: 99999;
+      filter: drop-shadow(0 0 8px rgba(255,106,0,0.9)) drop-shadow(0 0 20px rgba(255,106,0,0.5));
+      transition: filter .2s;
     }
     #cursor-ring {
-      position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99998;
-      width: 36px; height: 36px;
-      border: 1.5px solid rgba(255,106,0,0.6);
+      position: fixed;
+      top: 0; left: 0;
+      width: 52px; height: 52px;
       border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width .35s ease, height .35s ease, border-color .35s ease, transform .08s ease;
+      pointer-events: none;
+      z-index: 99998;
+      border: 1.5px solid rgba(255,255,255,0.55);
+      box-shadow: 0 0 12px rgba(255,106,0,0.3);
+      transition: width .35s, height .35s, border-color .35s, box-shadow .35s;
     }
-    body.cursor-hover #cursor-dot { width: 12px; height: 12px; background: #ff8533; }
-    body.cursor-hover #cursor-ring { width: 52px; height: 52px; border-color: rgba(255,106,0,0.9); }
-    body.cursor-click #cursor-dot { transform: translate(-50%,-50%) scale(0.6); }
-    body.cursor-click #cursor-ring { transform: translate(-50%,-50%) scale(0.85); }
+    body.cursor-hover #cursor-play {
+      filter: drop-shadow(0 0 14px rgba(255,106,0,1)) drop-shadow(0 0 32px rgba(255,106,0,0.7));
+    }
+    body.cursor-hover #cursor-ring {
+      width: 68px; height: 68px;
+      border-color: rgba(255,255,255,0.9);
+      box-shadow: 0 0 22px rgba(255,106,0,0.6);
+    }
+    body.cursor-click #cursor-ring {
+      width: 82px; height: 82px;
+      border-color: #fff;
+      box-shadow: 0 0 40px rgba(255,106,0,0.9);
+    }
     #cursor-trail-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 99997; }
-    @media (hover: none) { *, *::before, *::after { cursor: auto !important; } #cursor-dot, #cursor-ring, #cursor-trail-canvas { display: none; } }
+    @media (hover: none) {
+      * { cursor: auto !important; }
+      #cursor-play, #cursor-ring, #cursor-trail-canvas { display: none; }
+    }
   </style>
 </head>
 
 <body>
 
-  <div id="cursor-dot"></div>
+  <!-- CURSOR ELEMENTS -->
+  <div id="cursor-play">
+    <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#ff6a00"/>
+        </linearGradient>
+      </defs>
+      <polygon points="5,2 24,14 5,26" fill="url(#pg)"/>
+    </svg>
+  </div>
   <div id="cursor-ring"></div>
   <canvas id="cursor-trail-canvas"></canvas>
 
-  <!-- ═══════════════════════════════════════════════════════
-       NAVBAR
-       ═══════════════════════════════════════════════════════ -->
+  <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="container nav-inner">
-
-      <!-- LOGO — edit name here -->
       <a href="#hero" class="nav-logo">
         <div class="logo-mark">DA</div>
         <span class="logo-text">Diogo Arnaud</span>
       </a>
-
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#services">Services</a></li>
@@ -285,13 +298,10 @@
         <li><a href="#pricing">Packages</a></li>
         <li><a href="#contact" class="nav-cta">Let's Work</a></li>
       </ul>
-
       <button class="burger" id="burger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </div>
-
-    <!-- Mobile drawer -->
     <div class="mobile-menu" id="mobileMenu">
       <ul>
         <li><a href="#about">About</a></li>
@@ -305,38 +315,27 @@
 
   <main>
 
-    <!-- ═══════════════════════════════════════════════════════
-         HERO
-         ═══════════════════════════════════════════════════════ -->
+    <!-- HERO -->
     <section class="hero" id="hero">
       <div class="hero-grid"></div>
       <div class="hero-glow"></div>
-
       <div class="container hero-content">
-
         <div class="hero-badge reveal">
           <span class="badge-dot"></span>
           Available for new projects
         </div>
-
-        <!-- HERO HEADLINE — edit text here -->
         <h1 class="hero-headline reveal">
           Premium Video Editing<br />
           <span class="accent">for Creators</span> &amp; Brands
         </h1>
-
-        <!-- HERO SUBHEADLINE — edit text here -->
         <p class="hero-sub reveal">
           I help creators and businesses grow through high-quality video editing,
           motion design, and visual storytelling that demands attention.
         </p>
-
         <div class="hero-cta reveal">
           <a href="#portfolio" class="btn btn-primary">View Portfolio</a>
           <a href="#contact"   class="btn btn-ghost">Let's Work →</a>
         </div>
-
-        <!-- STATS — edit numbers here -->
         <div class="hero-stats reveal">
           <div class="stat-item">
             <span class="stat-num">50+</span>
@@ -354,26 +353,18 @@
           </div>
         </div>
       </div>
-
       <div class="hero-scroll">
         <span>Scroll</span>
         <div class="scroll-bar"></div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         ABOUT
-         ═══════════════════════════════════════════════════════ -->
+    <!-- ABOUT -->
     <section class="about" id="about">
       <div class="container about-grid">
-
         <div class="about-left reveal">
           <span class="section-tag">About</span>
-          <!-- ABOUT HEADLINE — edit here -->
-          <h2 class="section-heading">
-            Crafting visuals<br />that <span class="accent">convert</span>.
-          </h2>
-          <!-- ABOUT BIO — edit here -->
+          <h2 class="section-heading">Crafting visuals<br />that <span class="accent">convert</span>.</h2>
           <p class="about-body">
             I'm Diogo Arnaud, a Brazilian video editor and designer with a passion for
             cinematic storytelling and bold visual identities. I work at the intersection
@@ -393,30 +384,21 @@
             <span class="tag">Branding</span>
           </div>
         </div>
-
         <div class="about-right reveal">
-          <!-- PROFILE CARD
-               To use a real photo, replace the .about-avatar div with:
-               <img src="your-photo.jpg" alt="Diogo Arnaud" style="width:90px;height:90px;border-radius:50%;object-fit:cover;margin:0 auto 20px">
-          -->
           <div class="about-card">
             <div class="about-avatar">
               <span class="about-initials">DA</span>
             </div>
-            <!-- CARD NAME & ROLE — edit here -->
             <div class="about-name">Diogo Arnaud</div>
             <div class="about-role">Video Editor &amp; Designer</div>
             <div class="about-divider"></div>
             <div class="about-location">🇧🇷 Based in Brazil · Working Worldwide</div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         SERVICES
-         ═══════════════════════════════════════════════════════ -->
+    <!-- SERVICES -->
     <section class="services" id="services">
       <div class="container">
         <div class="section-header reveal">
@@ -424,78 +406,52 @@
           <h2 class="section-heading">What I <span class="accent">do</span></h2>
           <p class="section-sub">Every project is crafted with intention, precision, and an eye for what makes audiences stop scrolling.</p>
         </div>
-
         <div class="services-grid">
-
-          <!-- SERVICE CARD — edit title, description, and icon SVG -->
           <div class="service-card reveal">
             <div class="service-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </div>
             <h3>Video Editing</h3>
             <p>Cinematic cuts, color grading, and narrative-driven edits for YouTube, ads, and brand films that demand attention.</p>
             <span class="service-arrow">→</span>
           </div>
-
           <div class="service-card reveal">
             <div class="service-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </div>
             <h3>Short-Form Content</h3>
             <p>High-retention Reels, TikToks, and Shorts optimized for engagement — fast-paced edits designed to grow your following.</p>
             <span class="service-arrow">→</span>
           </div>
-
           <div class="service-card reveal">
             <div class="service-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <h3>Motion Design</h3>
             <p>Animated intros, lower thirds, kinetic typography, and custom motion graphics that bring your brand to life on screen.</p>
             <span class="service-arrow">→</span>
           </div>
-
           <div class="service-card reveal">
             <div class="service-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </div>
             <h3>Thumbnails</h3>
             <p>Click-worthy, high-contrast thumbnails crafted to boost CTR — your first impression determines whether viewers click or scroll.</p>
             <span class="service-arrow">→</span>
           </div>
-
           <div class="service-card reveal">
             <div class="service-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
             <h3>Social Media Design</h3>
             <p>Cohesive feed aesthetics, story templates, carousels, and visual identities that make your social presence look premium.</p>
             <span class="service-arrow">→</span>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         PORTFOLIO
-         ═══════════════════════════════════════════════════════
-         HOW TO REPLACE VIDEOS:
-         1. Go to YouTube and open the video you want to embed.
-         2. Click Share → Embed → copy the URL inside src="..."
-         3. Paste it into the src="" of the <iframe> below.
-         Format: https://www.youtube.com/embed/VIDEO_ID
-         ═══════════════════════════════════════════════════════ -->
+    <!-- PORTFOLIO -->
     <section class="portfolio" id="portfolio">
       <div class="container">
         <div class="section-header reveal">
@@ -503,67 +459,64 @@
           <h2 class="section-heading">Selected <span class="accent">Work</span></h2>
           <p class="section-sub">A curated selection of projects across editing, motion, and design.</p>
         </div>
-
         <div class="portfolio-grid">
 
-          <!-- PORTFOLIO CARD 1 -->
+          <!-- Card 1 — YouTube Gaming Edit -->
           <div class="portfolio-card reveal">
             <div class="video-wrap" style="cursor:pointer;" onclick="window.open('https://www.youtube.com/watch?v=bOAJEWxC9Gs','_blank')">
-              <img
-                src="https://img.youtube.com/vi/bOAJEWxC9Gs/maxresdefault.jpg"
-                onerror="this.src='https://img.youtube.com/vi/bOAJEWxC9Gs/hqdefault.jpg'"
-                alt="Gaming Edit"
-                style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;"
-              />
-              <!-- Play button overlay -->
+              <img src="https://img.youtube.com/vi/bOAJEWxC9Gs/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/bOAJEWxC9Gs/hqdefault.jpg'" alt="Gaming Edit" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
               <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
-                <div style="width:64px;height:64px;background:rgba(255,106,0,0.92);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(255,106,0,.45);">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+                <div style="width:60px;height:60px;background:rgba(255,106,0,0.92);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(255,106,0,.45);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
                 </div>
               </div>
             </div>
             <div class="portfolio-info">
-              <!-- REPLACE category label -->
               <span class="portfolio-cat">Gaming Edit</span>
-              <!-- REPLACE title -->
               <h3 class="portfolio-title">YouTube Gaming Edit</h3>
-              <!-- REPLACE description -->
               <p class="portfolio-desc">High-energy gameplay montage with custom transitions, motion graphics, and cinematic color grading.</p>
             </div>
           </div>
 
-<!-- PORTFOLIO CARD 2 -->
-<div class="portfolio-card reveal">
-    <a href="https://www.youtube.com/watch?v=F_tmkEOmhEQ" target="_blank" class="video-wrap">
-        <img src="thumb_2.png" alt="Lifestyle Vlog Edit" class="thumb">
-        <div class="play-button"></div>
-    </a>
+          <!-- Card 2 — Lifestyle Vlog -->
+          <div class="portfolio-card reveal">
+            <a href="https://www.youtube.com/watch?v=F_tmkEOmhEQ" target="_blank" class="video-wrap">
+              <img src="thumb_2.png" alt="Lifestyle Vlog Edit" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                <div style="width:60px;height:60px;background:rgba(255,106,0,0.92);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(255,106,0,.45);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
+              </div>
+            </a>
+            <div class="portfolio-info">
+              <span class="portfolio-cat">Long-Form</span>
+              <h3 class="portfolio-title">Lifestyle Vlog Edit</h3>
+              <p class="portfolio-desc">Long-form vlog editing focused on pacing, storytelling, and lifestyle visuals.</p>
+            </div>
+          </div>
 
-    <div class="portfolio-info">
-        <span class="portfolio-cat">Long-Form</span>
-        <h3 class="portfolio-title">Lifestyle Vlog Edit</h3>
-        <p class="portfolio-desc">Long-form vlog editing focused on pacing, storytelling, and lifestyle visuals.</p>
-    </div>
-</div>
+          <!-- Card 3 — Short-Form -->
+          <div class="portfolio-card reveal">
+            <a href="https://youtube.com/shorts/kkhI2F_r9YE" target="_blank" class="video-wrap">
+              <img src="Thumb_short_form.png" alt="Short-Form Content Edit" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                <div style="width:60px;height:60px;background:rgba(255,106,0,0.92);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(255,106,0,.45);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
+              </div>
+            </a>
+            <div class="portfolio-info">
+              <span class="portfolio-cat">Short-Form</span>
+              <h3 class="portfolio-title">Short-Form Video Editing</h3>
+              <p class="portfolio-desc">Short-form editing focused on retention, captions, pacing, and social media performance.</p>
+            </div>
+          </div>
 
-   <!-- PORTFOLIO CARD 3 -->
-<div class="portfolio-card reveal">
-    <a href="https://youtube.com/shorts/kkhI2F_r9YE" target="_blank" class="video-wrap">
-    <img src="Thumb_short_form.png" alt="Short-Form Content Edit" class="thumb">
-        <div class="play-button"></div>
-    </a>
-
-    <div class="portfolio-info">
-        <span class="portfolio-cat">Short-Form</span>
-        <h3 class="portfolio-title">Short-Form Video Editing</h3>
-        <p class="portfolio-desc">Short-form editing focused on retention, captions, pacing, and social media performance.</p>
-    </div>
-</div>
+        </div>
+      </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         PRICING
-         ═══════════════════════════════════════════════════════ -->
+    <!-- PRICING -->
     <section class="pricing" id="pricing">
       <div class="container">
         <div class="section-header reveal">
@@ -571,10 +524,7 @@
           <h2 class="section-heading">Simple, <span class="accent">flexible</span> pricing</h2>
           <p class="section-sub">Every project is unique. These packages are a starting point — let's build the right scope for you.</p>
         </div>
-
         <div class="pricing-grid">
-
-          <!-- PRICING CARD 1 — edit deliverables and description -->
           <div class="pricing-card reveal">
             <span class="pricing-tier">Starter</span>
             <h3 class="pricing-name">Essential Edit</h3>
@@ -587,15 +537,11 @@
               <li><span class="check">✓</span> 5–7 day delivery</li>
             </ul>
             <div class="pricing-price">
-              <!-- REPLACE with your actual price -->
               <div class="price-val">Custom Quote</div>
               <div class="price-note">Flexible by project scope</div>
             </div>
-            <!-- REPLACE href with your contact link -->
             <a href="#contact" class="btn btn-ghost pricing-btn">Contact Me →</a>
           </div>
-
-          <!-- PRICING CARD 2 — Featured -->
           <div class="pricing-card pricing-featured reveal">
             <div class="pricing-badge">Most Popular</div>
             <span class="pricing-tier">Growth</span>
@@ -615,8 +561,6 @@
             </div>
             <a href="#contact" class="btn btn-primary pricing-btn">Contact Me →</a>
           </div>
-
-          <!-- PRICING CARD 3 -->
           <div class="pricing-card reveal">
             <span class="pricing-tier">Premium</span>
             <h3 class="pricing-name">Brand Studio</h3>
@@ -635,56 +579,43 @@
             </div>
             <a href="#contact" class="btn btn-ghost pricing-btn">Contact Me →</a>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         WHY WORK WITH ME
-         ═══════════════════════════════════════════════════════ -->
+    <!-- WHY -->
     <section class="why" id="why">
       <div class="container">
         <div class="section-header reveal">
           <span class="section-tag">Why Me</span>
           <h2 class="section-heading">What sets me <span class="accent">apart</span></h2>
         </div>
-
         <div class="why-grid">
-
-          <!-- WHY CARDS — edit title and description -->
           <div class="why-card reveal">
             <div class="why-num">01</div>
             <h3>Fast, Clear Communication</h3>
             <p>You'll always know where your project stands. Responsive, organized, and always on deadline — no chasing required.</p>
           </div>
-
           <div class="why-card reveal">
             <div class="why-num">02</div>
             <h3>Premium Visual Quality</h3>
             <p>Every frame is intentional. From color grading to motion, I craft visuals that feel expensive — because quality is non-negotiable.</p>
           </div>
-
           <div class="why-card reveal">
             <div class="why-num">03</div>
             <h3>Obsessive Attention to Detail</h3>
             <p>The difference between good and great is in the details — audio, pacing, transitions, typography. I sweat it all so you don't have to.</p>
           </div>
-
           <div class="why-card reveal">
             <div class="why-num">04</div>
             <h3>Content Built to Perform</h3>
             <p>My edits aren't just pretty — they're strategic. Every cut is made to maximize engagement, retention, and conversions.</p>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         CONTACT
-         REPLACE all contact links and values below
-         ═══════════════════════════════════════════════════════ -->
+    <!-- CONTACT -->
     <section class="contact" id="contact">
       <div class="contact-glow"></div>
       <div class="container">
@@ -693,81 +624,53 @@
           <h2 class="section-heading">Ready to <span class="accent">create</span><br />something great?</h2>
           <p class="section-sub">Drop me a message and let's bring your vision to life.</p>
         </div>
-
         <div class="contact-cards reveal">
-
-          <!-- EMAIL -->
-          <a href="/cdn-cgi/l/email-protection#d89cbff6b9aab6b9adbcefefef98bfb5b9b1b4f6bbb7b5" class="contact-card">
+          <a href="mailto:diogoarnaud@email.com" class="contact-card">
             <div class="contact-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-              </svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
             <span class="contact-lbl">Email</span>
-            <span class="contact-val"><span class="__cf_email__" data-cfemail="85c1e2abe4f7ebe4f0e1b2b2b2c5e2e8e4ece9abe6eae8">[email&#160;protected]</span></span>
+            <span class="contact-val">diogoarnaud@email.com</span>
           </a>
-
-          <!-- WHATSAPP -->
           <a href="https://wa.me/5519999077927" class="contact-card" target="_blank" rel="noopener">
             <div class="contact-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-              </svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             </div>
             <span class="contact-lbl">WhatsApp</span>
             <span class="contact-val">+55 (19) 99907-7927</span>
           </a>
-
-          <!-- INSTAGRAM — replace href and contact-val -->
-          <a href="https://instagram.com/YOUR_HANDLE" class="contact-card" target="_blank" rel="noopener">
+          <a href="https://instagram.com/diogoarnaud" class="contact-card" target="_blank" rel="noopener">
             <div class="contact-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             </div>
             <span class="contact-lbl">Instagram</span>
-            <!-- REPLACE with your handle -->
             <span class="contact-val">@diogoarnaud</span>
           </a>
-
         </div>
-
         <div class="contact-cta reveal">
-          <p>
-            Available for freelance, retainer, and agency collaborations worldwide.<br />
-            <strong>Let's talk about your next project.</strong>
-          </p>
-          <!-- REPLACE href with your preferred contact link -->
-          <a href="/cdn-cgi/l/email-protection#0440632a65766a657160333333446369656d682a676b69" class="btn btn-primary">Send a Message</a>
+          <p>Available for freelance, retainer, and agency collaborations worldwide.<br /><strong>Let's talk about your next project.</strong></p>
+          <a href="https://wa.me/5519999077927" class="btn btn-primary">Send a Message</a>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       FOOTER
-       ═══════════════════════════════════════════════════════ -->
   <footer class="footer">
     <div class="container footer-inner">
       <div>
-        <!-- REPLACE with your name or brand -->
         <div class="footer-brand">Diogo Arnaud</div>
         <div class="footer-copy">© <span id="footerYear"></span> Diogo Arnaud. All rights reserved.</div>
       </div>
       <div class="footer-links">
-        <!-- REPLACE hrefs with real URLs -->
-        <a href="https://instagram.com/YOUR_HANDLE"  target="_blank" rel="noopener">Instagram</a>
-        <a href="https://youtube.com/@YOUR_CHANNEL"  target="_blank" rel="noopener">YouTube</a>
-        <a href="https://wa.me/5519999077927"         target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://instagram.com/diogoarnaud" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://youtube.com/@YOUR_CHANNEL" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://wa.me/5519999077927" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
   </footer>
 
-  <!-- External JS (same folder) -->
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="script.js"></script>
-
-  <!-- Inline JS fallback — identical logic, runs even if script.js is missing -->
+  <script src="script.js"></script>
   <script>
     // Navbar scroll
     (function(){var n=document.getElementById('navbar');if(!n)return;function s(){n.classList.toggle('scrolled',window.scrollY>36);}window.addEventListener('scroll',s,{passive:true});s();})();
@@ -776,33 +679,22 @@
     // Smooth scroll
     (function(){document.querySelectorAll('a[href^="#"]').forEach(function(l){l.addEventListener('click',function(e){var t=document.querySelector(l.getAttribute('href'));if(!t)return;e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-72,behavior:'smooth'});});});})();
     // Reveal
-    (function(){
-      document.body.classList.add('js-ready');
-      var els=document.querySelectorAll('.reveal');
-      if(!els.length)return;
-      var io=new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          if(!entry.isIntersecting)return;
-          var sib=[].slice.call(entry.target.parentElement.querySelectorAll('.reveal'));
-          var idx=sib.indexOf(entry.target);
-          setTimeout(function(){entry.target.classList.add('visible');},Math.min(idx*90,360));
-          io.unobserve(entry.target);
-        });
-      },{threshold:0.12});
-      els.forEach(function(el){io.observe(el);});
-    })();
+    (function(){document.body.classList.add('js-ready');var els=document.querySelectorAll('.reveal');if(!els.length)return;var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(!entry.isIntersecting)return;var sib=[].slice.call(entry.target.parentElement.querySelectorAll('.reveal'));var idx=sib.indexOf(entry.target);setTimeout(function(){entry.target.classList.add('visible');},Math.min(idx*90,360));io.unobserve(entry.target);});},{threshold:0.12});els.forEach(function(el){io.observe(el);});})();
     // Footer year
     (function(){var y=document.getElementById('footerYear');if(y)y.textContent=new Date().getFullYear();})();
   </script>
+
+  <!-- PREMIUM PLAY CURSOR -->
   <script>
   (function(){
-    var dot = document.getElementById('cursor-dot');
-    var ring = document.getElementById('cursor-ring');
+    var play   = document.getElementById('cursor-play');
+    var ring   = document.getElementById('cursor-ring');
     var canvas = document.getElementById('cursor-trail-canvas');
-    var ctx = canvas.getContext('2d');
-    var mx = -200, my = -200;
-    var rx = -200, ry = -200;
+    var ctx    = canvas.getContext('2d');
+    var mx = -300, my = -300;
+    var rx = -300, ry = -300;
     var particles = [];
+    var ringW = 52, ringH = 52;
 
     function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resize();
@@ -810,33 +702,64 @@
 
     document.addEventListener('mousemove', function(e){
       mx = e.clientX; my = e.clientY;
-      dot.style.left = mx + 'px';
-      dot.style.top  = my + 'px';
-      if(Math.random() > 0.35){
-        particles.push({ x: mx, y: my, r: Math.random()*3+1, alpha: 0.7, vx:(Math.random()-.5)*1.2, vy:(Math.random()-.5)*1.2 });
+      // Move play icon instantly
+      play.style.left = (mx - 14) + 'px';
+      play.style.top  = (my - 14) + 'px';
+      // Spawn trail particles
+      if(Math.random() > 0.4){
+        particles.push({
+          x: mx, y: my,
+          r: Math.random() * 2.5 + 0.5,
+          alpha: 0.7,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5,
+          white: Math.random() > 0.5
+        });
       }
     });
 
-    var hoverEls = 'a, button, .btn, .portfolio-card, .service-card, .pricing-card, .contact-card, .why-card, .nav-links a, .nav-cta, [onclick]';
-    document.querySelectorAll(hoverEls).forEach(function(el){
+    // Hover
+    document.querySelectorAll('a,button,.btn,.portfolio-card,.service-card,.pricing-card,.contact-card,.why-card').forEach(function(el){
       el.addEventListener('mouseenter', function(){ document.body.classList.add('cursor-hover'); });
       el.addEventListener('mouseleave', function(){ document.body.classList.remove('cursor-hover'); });
     });
 
-    document.addEventListener('mousedown', function(){ document.body.classList.add('cursor-click'); });
-    document.addEventListener('mouseup',   function(){ document.body.classList.remove('cursor-click'); });
+    // Click burst
+    document.addEventListener('mousedown', function(){
+      document.body.classList.add('cursor-click');
+      for(var i = 0; i < 18; i++){
+        var angle = (i / 18) * Math.PI * 2;
+        var speed = Math.random() * 4 + 2;
+        particles.push({ x: mx, y: my, r: Math.random()*3+1, alpha: 1, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, white: i%2===0 });
+      }
+    });
+    document.addEventListener('mouseup', function(){ document.body.classList.remove('cursor-click'); });
 
-    function lerp(a,b,t){ return a+(b-a)*t; }
+    function lerp(a, b, t){ return a + (b - a) * t; }
 
     function loop(){
       requestAnimationFrame(loop);
-
-      rx = lerp(rx, mx, 0.13);
-      ry = lerp(ry, my, 0.13);
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(var i = particles.length-1; i >= 0; i--){
+      // Lag ring
+      rx = lerp(rx, mx, 0.12);
+      ry = lerp(ry, my, 0.12);
+      ring.style.left = (rx - ringW/2) + 'px';
+      ring.style.top  = (ry - ringH/2) + 'px';
+      // Draw particles
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for(var i = particles.length - 1; i >= 0; i--){
         var p = particles[i];
-        p.x += p.vx; p.y += p.vy; p.alpha -= 0.03
+        p.x += p.vx; p.y += p.vy;
+        p.alpha -= 0.025; p.r *= 0.97;
+        if(p.alpha <= 0){ particles.splice(i, 1); continue; }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(p.r, 0.1), 0, Math.PI * 2);
+        ctx.fillStyle = p.white ? 'rgba(255,255,255,' + p.alpha + ')' : 'rgba(255,106,0,' + p.alpha + ')';
+        ctx.fill();
+      }
+    }
+    loop();
+  })();
+  </script>
+
+</body>
+</html>
